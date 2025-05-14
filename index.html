@@ -1,0 +1,940 @@
+make updation in this code
+const stories = \[
+// Original 3 stories
+{
+difficulty: "easy",
+lines: \[
+"The ***1*** jumps over the lazy dog.",
+"It was a ***2*** and sunny day.",
+"The dog did not ***3*** at all.",
+"Birds were singing in the ***4***.",
+"Everyone enjoyed the ***5*** in the park.",
+"At the end, they all felt very ***6***."
+],
+blanks: \["fox", "bright", "bark", "trees", "picnic", "happy"],
+wordBank: \["fox", "dog", "bright", "dark", "bark", "meow", "trees", "sky", "picnic", "party", "happy", "sad"]
+},
+{
+difficulty: "easy",
+lines: \[
+"Anna likes to ***1*** books every evening.",
+"Her favorite ***2*** is about space.",
+"She reads under the ***3*** light.",
+"Sometimes she writes her own ***4***.",
+"Her stories are full of ***5***.",
+"Reading makes her feel very ***6***."
+],
+blanks: \["read", "book", "lamp", "stories", "adventure", "joyful"],
+wordBank: \["read", "write", "book", "magazine", "lamp", "sun", "stories", "poems", "adventure", "fun", "joyful", "sad"]
+},
+{
+difficulty: "easy",
+lines: \[
+"The little boy ***1*** a red balloon.",
+"He walked to the ***2*** near his house.",
+"There were many children playing ***3***.",
+"The sun was shining very ***4***.",
+"They all laughed and had a ***5***.",
+"It was a day full of ***6***."
+],
+blanks: \["held", "park", "games", "brightly", "fun", "happiness"],
+wordBank: \["held", "threw", "park", "school", "games", "books", "brightly", "darkly", "fun", "sadness", "happiness", "fear"]
+},
+
+// Medium difficulty stories
+{
+difficulty: "medium",
+lines: \[
+"The ***1*** climbed the tall mountain.",
+"It was a ***2*** and windy day.",
+"The climber wore a ***3*** jacket.",
+"He reached the ***4*** at sunset.",
+"The view was ***5*** and breathtaking.",
+"He felt ***6*** and proud."
+],
+blanks: \["hiker", "cold", "red", "peak", "beautiful", "happy"],
+wordBank: \["hiker", "runner", "cold", "hot", "red", "blue", "peak", "valley", "beautiful", "dark", "happy", "sad"]
+},
+{
+difficulty: "medium",
+lines: \[
+"Sara ***1*** a delicious cake.",
+"She baked it for her ***2***.",
+"The cake was ***3*** and sweet.",
+"Everyone ***4*** it happily.",
+"They sang ***5*** songs.",
+"It was a ***6*** celebration."
+],
+blanks: \["baked", "birthday", "chocolate", "ate", "happy", "fun"],
+wordBank: \["baked", "made", "birthday", "wedding", "chocolate", "vanilla", "ate", "liked", "happy", "sad", "fun", "boring"]
+},
+{
+difficulty: "medium",
+lines: \[
+"The ***1*** flew across the sky.",
+"It was a ***2*** bird with bright feathers.",
+"It sang a ***3*** melody.",
+"The children ***4*** to listen.",
+"The garden was full of ***5***.",
+"Everyone felt ***6*** and calm."
+],
+blanks: \["bird", "colorful", "sweet", "stopped", "flowers", "peaceful"],
+wordBank: \["bird", "plane", "colorful", "dull", "sweet", "loud", "stopped", "ran", "flowers", "trees", "peaceful", "noisy"]
+},
+
+// Hard difficulty stories
+{
+difficulty: "hard",
+lines: \[
+"The teacher ***1*** the lesson clearly.",
+"Students ***2*** attentively.",
+"The classroom was ***3***.",
+"Everyone ***4*** questions.",
+"The topic was ***5***.",
+"It was a ***6*** day of learning."
+],
+blanks: \["explained", "listened", "quiet", "asked", "interesting", "productive"],
+wordBank: \["explained", "ignored", "listened", "talked", "quiet", "noisy", "asked", "avoided", "interesting", "boring", "productive", "wasteful"]
+},
+{
+difficulty: "hard",
+lines: \[
+"The gardener ***1*** the flowers carefully.",
+"She watered the ***2*** plants.",
+"Bees ***3*** around the garden.",
+"The air smelled ***4***.",
+"The garden was full of ***5***.",
+"It was a ***6*** place."
+],
+blanks: \["tended", "young", "buzzed", "fresh", "colors", "peaceful"],
+wordBank: \["tended", "ignored", "young", "old", "buzzed", "flew", "fresh", "stale", "colors", "weeds", "peaceful", "chaotic"]
+},
+{
+difficulty: "hard",
+lines: \[
+"The musician ***1*** a beautiful song.",
+"The audience ***2*** quietly.",
+"The melody was ***3***.",
+"Lights ***4*** softly on stage.",
+"Everyone felt ***5***.",
+"It was a ***6*** performance."
+],
+blanks: \["played", "listened", "soothing", "glowed", "moved", "memorable"],
+wordBank: \["played", "sang", "listened", "ignored", "soothing", "loud", "glowed", "dimmed", "moved", "bored", "memorable", "forgettable"]
+}
+];
+
+// Game state variables
+let currentStoryIndex = 0;
+let currentLineIndex = 0;
+let tokensEarned = 0;
+let timer;
+let timeLeft = 30;
+
+// DOM elements
+const titlePage = document.getElementById('title-page');
+const personalInfo = document.getElementById('personal-info');
+const questions = document.getElementById('questions');
+const storyBuilder = document.getElementById('story-builder');
+
+const startBtn = document.getElementById('start-btn');
+const instructionsBtn = document.getElementById('instructions-btn');
+const infoForm = document.getElementById('info-form');
+const quizForm = document.getElementById('quiz-form');
+
+const storyLineEl = document.getElementById('story-line');
+const blankInput = document.getElementById('blank-input');
+const wordBankEl = document.getElementById('word-bank');
+const feedbackEl = document.getElementById('feedback');
+const checkBtn = document.getElementById('check-btn');
+const nextBtn = document.getElementById('next-btn');
+const completionEl = document.getElementById('completion');
+const completionMsg = document.getElementById('completion-msg');
+const newStoryBtn = document.getElementById('new-story-btn');
+const timerEl = document.getElementById('timer');
+const timeLeftEl = document.getElementById('time-left');
+const tokenCounter = document.getElementById('token-counter');
+const questionCounter = document.getElementById('question-counter');
+const totalQuestions = document.getElementById('total-questions');
+const progressBar = document.getElementById('progress-bar');
+
+// Modal elements
+const instructionsModal = document.getElementById('instructions-modal');
+const closeModal = document.querySelector('.close-modal');
+
+// Audio elements
+const correctSound = document.getElementById('correct-sound');
+const wrongSound = document.getElementById('wrong-sound');
+const completeSound = document.getElementById('complete-sound');
+
+// Event Listeners
+startBtn.addEventListener('click', () => {
+titlePage.classList.add('hidden');
+personalInfo.classList.remove('hidden');
+});
+
+instructionsBtn.addEventListener('click', () => {
+instructionsModal.classList.remove('hidden');
+});
+
+closeModal.addEventListener('click', () => {
+instructionsModal.classList.add('hidden');
+});
+
+infoForm.addEventListener('submit', (e) => {
+e.preventDefault();
+saveUserData();
+personalInfo.classList.add('hidden');
+questions.classList.remove('hidden');
+});
+
+quizForm.addEventListener('submit', (e) => {
+e.preventDefault();
+questions.classList.add('hidden');
+startStoryBuilder();
+});
+
+checkBtn.addEventListener('click', checkAnswer);
+nextBtn.addEventListener('click', nextLine);
+newStoryBtn.addEventListener('click', loadNewStory);
+
+// Load saved user data on page load
+window\.addEventListener('DOMContentLoaded', loadUserData);
+
+// Game functions
+function saveUserData() {
+const userData = {
+name: document.getElementById('name').value,
+age: document.getElementById('age').value,
+email: document.getElementById('email').value,
+country: document.getElementById('country').value,
+language: document.getElementById('language').value,
+difficulty: document.getElementById('difficulty').value,
+timedMode: document.getElementById('timed-mode').checked
+};
+localStorage.setItem('lenzifyUser', JSON.stringify(userData));
+}
+
+function loadUserData() {
+const savedData = localStorage.getItem('lenzifyUser');
+if (savedData) {
+const userData = JSON.parse(savedData);
+document.getElementById('name').value = userData.name || '';
+document.getElementById('age').value = userData.age || '';
+document.getElementById('email').value = userData.email || '';
+document.getElementById('country').value = userData.country || '';
+document.getElementById('language').value = userData.language || '';
+document.getElementById('difficulty').value = userData.difficulty || 'medium';
+document.getElementById('timed-mode').checked = userData.timedMode || false;
+}
+}
+
+function startStoryBuilder() {
+storyBuilder.classList.remove('hidden');
+tokensEarned = 0;
+currentStoryIndex = 0;
+currentLineIndex = 0;
+
+const difficulty = document.getElementById('difficulty').value;
+const filteredStories = stories.filter(story => story.difficulty === difficulty);
+
+if (filteredStories.length > 0) {
+currentStoryIndex = Math.floor(Math.random() \* filteredStories.length);
+loadStory(filteredStories\[currentStoryIndex]);
+} else {
+loadStory(stories\[0]);
+}
+}
+
+function loadStory(story) {
+currentLineIndex = 0;
+completionEl.classList.add('hidden');
+checkBtn.disabled = true;
+nextBtn.disabled = true;
+feedbackEl.textContent = '';
+blankInput.value = '';
+blankInput.readOnly = true;
+
+if (document.getElementById('timed-mode').checked) {
+timerEl.classList.remove('hidden');
+startTimer();
+} else {
+timerEl.classList.add('hidden');
+clearTimer();
+}
+
+updateProgress();
+renderLine(story);
+renderWordBank(story);
+}
+
+function renderLine(story) {
+const line = story.lines\[currentLineIndex];
+const displayLine = line.replace(`___${currentLineIndex + 1}___`, '\_\_\_\_\_');
+storyLineEl.textContent = displayLine;
+}
+
+function renderWordBank(story) {
+wordBankEl.innerHTML = '';
+
+// Shuffle word bank
+const shuffledWords = \[...story.wordBank].sort(() => Math.random() - 0.5);
+
+shuffledWords.forEach(word => {
+const wordBtn = document.createElement('div');
+wordBtn.classList.add('word');
+wordBtn.textContent = word;
+wordBtn.addEventListener('click', () => {
+blankInput.value = word;
+checkBtn.disabled = false;
+feedbackEl.textContent = '';
+nextBtn.disabled = true;
+
+```
+  // Highlight selected word
+  document.querySelectorAll('.word').forEach(w => w.classList.remove('selected'));
+  wordBtn.classList.add('selected');
+  
+  // Reset timer if in timed mode
+  if (document.getElementById('timed-mode').checked) {
+    resetTimer();
+  }
+});
+wordBankEl.appendChild(wordBtn);
+```
+
+});
+}
+
+function checkAnswer() {
+const story = stories\[currentStoryIndex];
+const answer = story.blanks\[currentLineIndex];
+const userInput = blankInput.value.trim().toLowerCase();
+
+if (userInput === answer.toLowerCase()) {
+feedbackEl.textContent = 'Correct!';
+feedbackEl.className = 'feedback correct';
+tokensEarned++;
+correctSound.play();
+checkBtn.disabled = true;
+nextBtn.disabled = false;
+updateProgress();
+
+```
+// In timed mode, stop timer on correct answer
+if (document.getElementById('timed-mode').checked) {
+  clearTimer();
+}
+```
+
+} else {
+feedbackEl.textContent = 'Incorrect, try again.';
+feedbackEl.className = 'feedback incorrect';
+wrongSound.play();
+}
+}
+
+function nextLine() {
+currentLineIndex++;
+const story = stories\[currentStoryIndex];
+
+if (currentLineIndex >= story.lines.length) {
+showCompletion();
+} else {
+blankInput.value = '';
+feedbackEl.textContent = '';
+checkBtn.disabled = true;
+nextBtn.disabled = true;
+renderLine(story);
+renderWordBank(story);
+updateProgress();
+
+```
+// Reset timer if in timed mode
+if (document.getElementById('timed-mode').checked) {
+  resetTimer();
+}
+```
+
+}
+}
+
+function showCompletion() {
+storyLineEl.textContent = '';
+blankInput.value = '';
+blankInput.readOnly = true;
+wordBankEl.innerHTML = '';
+checkBtn.disabled = true;
+nextBtn.disabled = true;
+completionEl.classList.remove('hidden');
+completionMsg.innerHTML = `Great job! You earned <span class="token">${tokensEarned}</span> tokens of appreciation! 🎉`;
+completeSound.play();
+clearTimer();
+}
+
+function loadNewStory() {
+let newIndex;
+const difficulty = document.getElementById('difficulty').value;
+const filteredStories = stories.filter(story => story.difficulty === difficulty);
+
+do {
+newIndex = Math.floor(Math.random() \* filteredStories.length);
+} while (filteredStories.length > 1 && newIndex === currentStoryIndex);
+
+currentStoryIndex = newIndex;
+tokensEarned = 0;
+loadStory(filteredStories\[currentStoryIndex]);
+}
+
+function updateProgress() {
+const story = stories\[currentStoryIndex];
+const progress = (currentLineIndex / story.lines.length) \* 100;
+progressBar.style.width = `${progress}%`;
+questionCounter.textContent = currentLineIndex + 1;
+tokenCounter.textContent = tokensEarned;
+totalQuestions.textContent = story.lines.length;
+}
+
+// Timer functions
+function startTimer() {
+timeLeft = 30;
+timeLeftEl.textContent = timeLeft;
+timer = setInterval(() => {
+timeLeft--;
+timeLeftEl.textContent = timeLeft;
+
+```
+if (timeLeft <= 0) {
+  clearInterval(timer);
+  feedbackEl.textContent = "Time's up! Try another word.";
+  feedbackEl.className = "feedback incorrect";
+  wrongSound.play();
+}
+```
+
+}, 1000);
+}
+
+function resetTimer() {
+clearInterval(timer);
+startTimer();
+}
+
+function clearTimer() {
+clearInterval(timer);
+timerEl.classList.add('hidden');
+}
+/\* General body and layout \*/
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #a8edea, #fed6e3);
+margin: 0;
+padding: 0;
+color: #333;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+/\* Header styling with flex and gap \*/
+header {
+background: #4a90e2;
+width: 100%;
+padding: 1rem 0;
+color: white;
+text-align: center;
+font-weight: 700;
+font-size: 2rem;
+letter-spacing: 2px;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 1rem;
+position: relative;
+z-index: 2;
+box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+user-select: none;
+}
+
+/\* Logo container \*/
+.logo-svg {
+display: flex;
+align-items: center;
+transition: transform 0.3s ease;
+}
+.logo-svg\:hover {
+transform: scale(1.1);
+cursor: pointer;
+}
+
+/\* Decorative wave below header \*/
+.wave-decor {
+width: 100%;
+margin-bottom: -10px;
+z-index: 1;
+position: relative;
+}
+
+/\* Main container card styling \*/
+main {
+width: 90%;
+max-width: 600px;
+background: white;
+border-radius: 18px;
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.11);
+padding: 2rem;
+margin: 2rem 0;
+position: relative;
+z-index: 2;
+transition: box-shadow 0.3s ease;
+}
+main\:hover {
+box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+}
+
+/\* Section titles \*/
+h2 {
+color: #4a90e2;
+margin-bottom: 1rem;
+text-align: center;
+font-weight: 700;
+letter-spacing: 1px;
+}
+
+/\* Buttons with smooth hover effect \*/
+button {
+background-color: #4a90e2;
+color: white;
+border: none;
+padding: 0.6rem 1.2rem;
+border-radius: 6px;
+cursor: pointer;
+font-size: 1rem;
+transition: background-color 0.3s ease, box-shadow 0.3s ease;
+margin-top: 1rem;
+box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+user-select: none;
+}
+button\:hover\:not(\:disabled) {
+background-color: #357abd;
+box-shadow: 0 4px 14px rgba(53, 122, 189, 0.6);
+}
+button\:disabled {
+background-color: #a0c4f7;
+cursor: not-allowed;
+box-shadow: none;
+}
+
+/\* Button group \*/
+.button-group {
+display: flex;
+gap: 1rem;
+justify-content: center;
+flex-wrap: wrap;
+}
+
+/\* Inputs and selects styling \*/
+input\[type=text],
+input\[type=number],
+input\[type=email],
+select {
+width: 100%;
+padding: 0.6rem;
+margin: 0.4rem 0 1rem 0;
+border: 1px solid #ccc;
+border-radius: 6px;
+font-size: 1rem;
+box-sizing: border-box;
+transition: border-color 0.3s ease;
+}
+input\[type=text]\:focus,
+input\[type=number]\:focus,
+input\[type=email]\:focus,
+select\:focus {
+border-color: #4a90e2;
+outline: none;
+box-shadow: 0 0 6px #4a90e2aa;
+}
+
+/\* Checkbox styling \*/
+.checkbox-label {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+margin: 1rem 0;
+cursor: pointer;
+}
+.checkbox-label input {
+width: auto;
+margin: 0;
+}
+
+/\* Labels styling \*/
+label {
+font-weight: 600;
+margin-top: 1rem;
+display: block;
+user-select: none;
+}
+
+/\* Hide elements \*/
+.hidden {
+display: none;
+}
+
+/\* Word bank container \*/
+.word-bank {
+margin-top: 1rem;
+display: flex;
+flex-wrap: wrap;
+gap: 0.8rem;
+justify-content: center;
+}
+
+/\* Individual word buttons \*/
+.word {
+background: #e1f5fe;
+border: 1px solid #81d4fa;
+border-radius: 20px;
+padding: 0.4rem 1rem;
+cursor: pointer;
+user-select: none;
+font-weight: 600;
+transition: all 0.3s ease;
+box-shadow: 0 2px 6px rgba(129, 212, 250, 0.5);
+}
+.word\:hover {
+background-color: #81d4fa;
+color: white;
+transform: scale(1.05);
+}
+.word.selected {
+background-color: #4a90e2;
+color: white;
+transform: scale(0.95);
+}
+
+/\* Feedback text \*/
+.feedback {
+margin-top: 0.5rem;
+font-weight: 700;
+text-align: center;
+font-size: 1.1rem;
+min-height: 1.5em;
+user-select: none;
+}
+.correct {
+color: #2e7d32;
+}
+.incorrect {
+color: #c62828;
+}
+
+/\* Token badge \*/
+.token {
+background: #ffd54f;
+border-radius: 50%;
+padding: 0.4rem 0.7rem;
+margin-left: 0.5rem;
+font-weight: 700;
+color: #6d4c41;
+user-select: none;
+box-shadow: 0 0 4px #ffd54faa;
+}
+
+/\* Navigation buttons container \*/
+.nav-buttons {
+display: flex;
+justify-content: space-between;
+margin-top: 2rem;
+}
+
+/\* Progress bar \*/
+.progress-container {
+width: 100%;
+margin: 1rem 0;
+}
+.progress-bar {
+height: 10px;
+background: #4a90e2;
+width: 0%;
+border-radius: 5px;
+transition: width 0.3s ease;
+}
+.progress-text {
+text-align: center;
+font-weight: 600;
+margin-top: 0.5rem;
+}
+
+/\* Timer \*/
+\#timer {
+background: #ffd54f;
+padding: 0.5rem 1rem;
+border-radius: 20px;
+display: inline-block;
+font-weight: bold;
+margin-bottom: 1rem;
+}
+
+/\* Modal \*/
+.modal {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.7);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 100;
+}
+.modal-content {
+background: white;
+padding: 2rem;
+border-radius: 12px;
+max-width: 500px;
+position: relative;
+margin: 1rem;
+max-height: 80vh;
+overflow-y: auto;
+}
+.close-modal {
+position: absolute;
+top: 1rem;
+right: 1rem;
+font-size: 1.5rem;
+cursor: pointer;
+background: none;
+border: none;
+color: #333;
+}
+.close-modal\:hover {
+color: #4a90e2;
+}
+
+/\* Responsive adjustments \*/
+@media (max-width: 600px) {
+main {
+padding: 1rem;
+}
+header {
+font-size: 1.3rem;
+}
+.button-group {
+flex-direction: column;
+align-items: center;
+}
+.modal-content {
+padding: 1.5rem 1rem;
+}
+}
+
+ <!DOCTYPE html> 
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lenzify - Language Learning App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<span id="closeModalBtn" class="close-button">&times;</span>
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+<header>
+  <span class="logo-svg">
+    <svg width="44" height="44" viewBox="0 0 64 64" fill="none" aria-label="Lenzify logo" role="img">
+      <rect x="8" y="12" width="48" height="40" rx="8" fill="#4a90e2"/>
+      <rect x="16" y="20" width="32" height="24" rx="4" fill="#fff"/>
+      <rect x="20" y="24" width="24" height="16" rx="2" fill="#a8edea"/>
+      <path d="M32 24V40" stroke="#4a90e2" stroke-width="2"/>
+      <path d="M24 32H40" stroke="#4a90e2" stroke-width="2"/>
+      <circle cx="54" cy="16" r="2" fill="#ffd54f"/>
+      <circle cx="10" cy="18" r="1.5" fill="#fed6e3"/>
+      <circle cx="58" cy="38" r="1.5" fill="#fff"/>
+      <circle cx="12" cy="40" r="2" fill="#ffd54f"/>
+    </svg>
+  </span>
+  Lenzify
+</header>
+
+<div class="wave-decor">
+  <svg viewBox="0 0 500 50" preserveAspectRatio="none" style="width:100%;height:50px;">
+    <path d="M0,30 Q125,60 250,30 T500,30 V50 H0 Z" fill="#a8edea" opacity="0.6"/>
+    <path d="M0,40 Q125,20 250,40 T500,40 V50 H0 Z" fill="#fed6e3" opacity="0.6"/>
+  </svg>
+</div>
+
+<main id="app">
+
+  <section id="title-page">
+    <h2>Welcome to Lenzify</h2>
+    <p>
+      Lenzify is your interactive language learning app! Build stories,
+      answer questions, and improve your vocabulary with fun
+      fill-in-the-blank games.
+    </p>
+    <div class="button-group">
+      <button id="start-btn">Start Learning</button>
+      <button id="instructions-btn">How to Play</button>
+    </div>
+  </section>
+
+  <section id="personal-info" class="hidden">
+    <h2>Tell Us About You</h2>
+    <form id="info-form">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required placeholder="Your name" />
+
+```
+  <label for="age">Age</label>
+  <input type="number" id="age" required min="3" max="120" placeholder="Your age" />
+
+  <label for="email">Email</label>
+  <input type="email" id="email" placeholder="Your email (optional)" />
+
+  <label for="country">Country</label>
+  <input type="text" id="country" required placeholder="Your country" />
+
+  <label for="language">Language You Want to Learn</label>
+  <select id="language" required>
+    <option value="">Select a language</option>
+    <option value="English">English</option>
+    <option value="Spanish">Spanish</option>
+    <option value="French">French</option>
+    <option value="German">German</option>
+  </select>
+
+  <label for="difficulty">Select Difficulty:</label>
+  <select id="difficulty" required>
+    <option value="easy">Easy (Common Words)</option>
+    <option value="medium">Medium (Mixed Vocabulary)</option>
+    <option value="hard">Hard (Advanced Words)</option>
+  </select>
+
+  <label class="checkbox-label">
+    <input type="checkbox" id="timed-mode"> Enable Timed Mode (30 seconds per question)
+  </label>
+
+  <button type="submit">Next</button>
+</form>
+```
+
+  </section>
+
+  <section id="questions" class="hidden">
+    <h2>Quick Quiz</h2>
+    <form id="quiz-form">
+      <label>1. What is the capital of France?</label>
+      <select name="q1" required>
+        <option value="">Choose</option>
+        <option value="Paris">Paris</option>
+        <option value="London">London</option>
+        <option value="Berlin">Berlin</option>
+      </select>
+
+```
+  <label>2. Which language is spoken in Brazil?</label>
+  <select name="q2" required>
+    <option value="">Choose</option>
+    <option value="Portuguese">Portuguese</option>
+    <option value="Spanish">Spanish</option>
+    <option value="French">French</option>
+  </select>
+
+  <label>3. What does "Hola" mean in English?</label>
+  <select name="q3" required>
+    <option value="">Choose</option>
+    <option value="Hello">Hello</option>
+    <option value="Goodbye">Goodbye</option>
+    <option value="Please">Please</option>
+  </select>
+
+  <label>4. Which is a common greeting in German?</label>
+  <select name="q4" required>
+    <option value="">Choose</option>
+    <option value="Hallo">Hallo</option>
+    <option value="Ciao">Ciao</option>
+    <option value="Bonjour">Bonjour</option>
+  </select>
+
+  <button type="submit">Start Story Builder Game</button>
+</form>
+```
+
+  </section>
+
+  <section id="story-builder" class="hidden">
+    <h2>Story Builder Game</h2>
+
+```
+<div id="timer" class="hidden">
+  Time Left: <span id="time-left">30</span>s
+</div>
+
+<div class="progress-container">
+  <div class="progress-bar" id="progress-bar"></div>
+  <div class="progress-text">
+    Tokens: <span id="token-counter">0</span> | 
+    Question: <span id="question-counter">1</span>/<span id="total-questions">6</span>
+  </div>
+</div>
+
+<p id="story-line"></p>
+
+<input type="text" id="blank-input" placeholder="Choose a word from the word bank" readonly />
+<div class="word-bank" id="word-bank"></div>
+
+<div class="feedback" id="feedback"></div>
+
+<div class="nav-buttons">
+  <button id="check-btn" disabled>Check</button>
+  <button id="next-btn" disabled>Next</button>
+</div>
+
+<div id="completion" class="hidden" style="text-align: center; margin-top: 2rem">
+  <h3>Story Completed!</h3>
+  <p id="completion-msg"></p>
+  <button id="new-story-btn">Try Another Story</button>
+</div>
+```
+
+  </section>
+</main>
+
+<!-- Instructions Modal -->
+
+<div id="instructions-modal" class="modal hidden">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h2>How to Play Lenzify</h2>
+    <ol>
+      <li>Fill in your personal information</li>
+      <li>Complete the quick language quiz</li>
+      <li>Read each story sentence with blanks</li>
+      <li>Select words from the word bank to fill blanks</li>
+      <li>Earn tokens for correct answers!</li>
+    </ol>
+    <h3>Tips:</h3>
+    <ul>
+      <li>Read the whole sentence before choosing a word</li>
+      <li>Look at the surrounding words for context clues</li>
+      <li>Try to guess before looking at the word bank</li>
+      <li>In timed mode, think quickly but carefully</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Audio Elements -->
+
+<audio id="correct-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"></audio> <audio id="wrong-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio> <audio id="complete-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+
+<script src="script.js"></script>
+
+</body>
+</html>
+it does not play after that ye smne se nai hatta
