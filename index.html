@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lenzify - Language Learning App</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <span class="logo-svg">
+    <svg width="44" height="44" viewBox="0 0 64 64" fill="none" aria-label="Lenzify logo" role="img">
+      <rect x="8" y="12" width="48" height="40" rx="8" fill="#4a90e2"/>
+      <rect x="16" y="20" width="32" height="24" rx="4" fill="#fff"/>
+      <rect x="20" y="24" width="24" height="16" rx="2" fill="#a8edea"/>
+      <path d="M32 24V40" stroke="#4a90e2" stroke-width="2"/>
+      <path d="M24 32H40" stroke="#4a90e2" stroke-width="2"/>
+      <circle cx="54" cy="16" r="2" fill="#ffd54f"/>
+      <circle cx="10" cy="18" r="1.5" fill="#fed6e3"/>
+      <circle cx="58" cy="38" r="1.5" fill="#fff"/>
+      <circle cx="12" cy="40" r="2" fill="#ffd54f"/>
+    </svg>
+  </span>
+  Lenzify
+</header>
+
+<div class="wave-decor">
+  <svg viewBox="0 0 500 50" preserveAspectRatio="none" style="width:100%;height:50px;">
+    <path d="M0,30 Q125,60 250,30 T500,30 V50 H0 Z" fill="#a8edea" opacity="0.6"/>
+    <path d="M0,40 Q125,20 250,40 T500,40 V50 H0 Z" fill="#fed6e3" opacity="0.6"/>
+  </svg>
+</div>
+
+<main id="app">
+
+  <section id="title-page">
+    <h2>Welcome to Lenzify</h2>
+    <p>
+      Lenzify is your interactive language learning app! Build stories, answer questions, and improve your vocabulary with fun fill-in-the-blank games.
+    </p>
+    <button id="start-btn">Start Learning</button>
+  </section>
+
+  <section id="personal-info" class="hidden">
+    <h2>Tell Us About You</h2>
+    <form id="info-form">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" required placeholder="Your name" />
+
+      <label for="age">Age</label>
+      <input type="number" id="age" required min="3" max="120" placeholder="Your age" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" required placeholder="Your email" />
+
+      <label for="country">Country</label>
+      <input type="text" id="country" required placeholder="Your country" />
+
+      <label for="language">Language You Want to Learn</label>
+      <select id="language" required>
+        <option value="">Select a language</option>
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option>
+        <option value="German">German</option>
+      </select>
+
+      <button type="submit">Next</button>
+    </form>
+  </section>
+
+  <section id="questions" class="hidden">
+    <h2>Quick Quiz</h2>
+    <form id="quiz-form">
+      <label>1. What is the capital of France?</label>
+      <select name="q1" required>
+        <option value="">Choose</option>
+        <option value="Paris">Paris</option>
+        <option value="London">London</option>
+        <option value="Berlin">Berlin</option>
+      </select>
+
+      <label>2. Which language is spoken in Brazil?</label>
+      <select name="q2" required>
+        <option value="">Choose</option>
+        <option value="Portuguese">Portuguese</option>
+        <option value="Spanish">Spanish</option>
+        <option value="French">French</option>
+      </select>
+
+      <label>3. What does "Hola" mean in English?</label>
+      <select name="q3" required>
+        <option value="">Choose</option>
+        <option value="Hello">Hello</option>
+        <option value="Goodbye">Goodbye</option>
+        <option value="Please">Please</option>
+      </select>
+
+      <label>4. Which is a common greeting in German?</label>
+      <select name="q4" required>
+        <option value="">Choose</option>
+        <option value="Hallo">Hallo</option>
+        <option value="Ciao">Ciao</option>
+        <option value="Bonjour">Bonjour</option>
+      </select>
+
+      <button type="submit">Start Story Builder Game</button>
+    </form>
+  </section>
+
+  <section id="story-builder" class="hidden">
+    <h2>Story Builder Game</h2>
+    <p id="story-line"></p>
+
+    <input type="text" id="blank-input" placeholder="Choose a word from the word bank" readonly />
+    <div class="word-bank" id="word-bank"></div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="nav-buttons">
+      <button id="check-btn" disabled>Check</button>
+      <button id="next-btn" disabled>Next</button>
+    </div>
+
+    <div id="completion" class="hidden" style="text-align:center; margin-top: 2rem;">
+      <h3>Story Completed!</h3>
+      <p id="completion-msg"></p>
+      <button id="new-story-btn">Try Another Story</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
